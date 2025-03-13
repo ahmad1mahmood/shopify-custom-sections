@@ -1,0 +1,565 @@
+{% schema %}
+{
+  "name": "Custom Reviews",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section Title",
+      "default": "Most Recent Reviews"
+    },
+    {
+      "type": "url",
+      "id": "reviews_link",
+      "label": "Trustpilot Reviews Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_auto_slide",
+      "label": "Enable Auto Slide",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "slide_speed",
+      "label": "Slide Speed (Seconds)",
+      "min": 2,
+      "max": 10,
+      "default": 4
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#f9f9f9"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "max_reviews_per_slide",
+      "label": "Max Reviews Per Slide (Desktop)",
+      "min": 1,
+      "max": 5,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "max_reviews_per_slide_tablet",
+      "label": "Max Reviews Per Slide (Tablet)",
+      "min": 1,
+      "max": 3,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "max_reviews_per_slide_mobile",
+      "label": "Max Reviews Per Slide (Mobile)",
+      "min": 1,
+      "max": 3,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top (px)",
+      "min": 0,
+      "max": 100,
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom (px)",
+      "min": 0,
+      "max": 100,
+      "default": 30
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "text",
+          "id": "review_title",
+          "label": "Review Title",
+          "default": "Fast shipping and a quality product"
+        },
+        {
+          "type": "text",
+          "id": "review_author",
+          "label": "Author",
+          "default": "John Doe"
+        },
+        {
+          "type": "textarea",
+          "id": "review_content",
+          "label": "Review Content",
+          "default": "This product arrived on time and in excellent condition. Highly recommended!"
+        },
+        {
+          "type": "range",
+          "id": "review_rating",
+          "label": "Star Rating",
+          "min": 1,
+          "max": 5,
+          "default": 5
+        },
+        {
+          "type": "checkbox",
+          "id": "show_verified_badge",
+          "label": "Show Verified Badge",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "review_time",
+          "label": "Time Ago",
+          "default": "15 hours ago"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Reviews",
+      "blocks": [
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<div class="custom-reviews-section" style="background-color: {{ section.settings.background_color }}; color: {{ section.settings.text_color }}; padding-top: {{ section.settings.padding_top }}px; padding-bottom: {{ section.settings.padding_bottom }}px;">
+  <div class="custom-reviews-header">
+    <h2 class="custom-reviews-title">{{ section.settings.section_title }}</h2>
+    <a href="{{ section.settings.reviews_link }}" target="_blank" class="custom-reviews-see-all">See All Reviews</a>
+  </div>
+  <button class="custom-reviews-prev-btn" aria-label="Previous Reviews" tabindex="0">‹</button>
+  <div class="custom-reviews-wrapper">
+    <div class="custom-reviews-container" data-auto-slide="{{ section.settings.enable_auto_slide }}" data-speed="{{ section.settings.slide_speed }}" data-max-reviews="{{ section.settings.max_reviews_per_slide }}">
+      {% for block in section.blocks %}
+        <div class="custom-review-card" role="group" aria-label="Review {{ forloop.index }}">
+          <div class="custom-review-stars" role="img" aria-label="Rating: {{ block.settings.review_rating }} out of 5 stars">
+            {% for i in (1..5) %}
+              <span class="custom-review-star {% if i <= block.settings.review_rating %}filled{% else %}empty{% endif %}">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="24" height="24" fill="
+                    {% if i <= block.settings.review_rating %}
+                      {% if block.settings.review_rating == 1 %}#FF0000
+                      {% elsif block.settings.review_rating == 2 %}#FFA500
+                      {% elsif block.settings.review_rating == 3 %}#FFD700
+                      {% elsif block.settings.review_rating == 4 %}#73cf11
+                      {% else %}#00B67A
+                      {% endif %}
+                    {% else %}#E0E0E0
+                    {% endif %}
+                  " />
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" 
+                        fill="white" transform="translate(3, 3) scale(0.7)" />
+                </svg>
+              </span>
+            {% endfor %}
+                    {% if block.settings.show_verified_badge %}
+                     <span class="verified-section">
+  <span class="verified-badge"><i class="fas fa-check-circle"></i></span>
+  <span class="verified-text">Verified</span>
+</span>
+            {% endif %}
+          </div>
+          <span class="custom-review-title">
+            <h3 class="custom-review-title-text">{{ block.settings.review_title }}</h3>
+            <p class="custom-review-time">{{ block.settings.review_time }}</p>
+          </span>
+          <p class="custom-review-content">{{ block.settings.review_content | truncate: 120 }}</p>
+          <p class="custom-review-author">{{ block.settings.review_author }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  <button class="custom-reviews-next-btn" aria-label="Next Reviews" tabindex="0">›</button>
+</div>
+
+<style>
+
+.verified-section {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2px;
+}
+.verified-badge i {
+  margin-left: 10px;
+  font-size: 14px;
+  color: #6a6a67;
+}
+.verified-text {
+  margin-left: 5px;
+  font-family: TrustpilotDefaultFont, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: rgb(106, 106, 103);
+}
+  
+  .custom-reviews-section {
+    padding: 30px 20px;
+    max-width: 93%;
+    margin: auto;
+    position: relative;
+    overflow: visible;
+  }
+
+  .custom-reviews-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-family: Assistant, sans-serif;
+  }
+
+  .custom-reviews-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: Assistant, sans-serif;
+  }
+
+  .custom-reviews-see-all {
+    font-size: 16px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    font-family: Assistant, sans-serif;
+    position: relative;
+    display: inline-block;
+}
+
+.custom-reviews-see-all::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -2px; /* Adjust distance from text */
+    width: 0;
+    height: 1.5px;
+    background-color: currentColor; /* Matches text color */
+    transition: width 0.3s ease-in-out;
+}
+
+.custom-reviews-see-all:hover::after {
+    width: 100%;
+}
+
+
+  .custom-reviews-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .custom-reviews-container {
+    display: flex;
+    gap: 15px;
+    transition: transform 0.5s ease-in-out;
+    width: 100%;
+  }
+
+  .custom-review-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    flex: 1 1 calc((100% / var(--max-reviews-per-slide)) - 20px);
+    max-width: calc((100% / var(--max-reviews-per-slide)) - 20px);
+    box-sizing: border-box;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 250px;
+  }
+
+  .custom-review-stars {
+    margin-top: 5px;
+    display: flex;
+    gap: 2px;
+  }
+
+  .custom-review-stars .custom-review-star {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+  }
+
+  .custom-review-stars .custom-review-star svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .custom-review-time {
+    font-family: Assistant, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 16px;
+    color: rgb(0, 0, 0);
+  }
+
+  .custom-review-content {
+    font-size: 16px;
+    color: #333;
+    flex-grow: 1;
+    font-family: 'Assistant', sans-serif;
+    line-height: 1.6;
+    text-align: left;
+    word-wrap: break-word;
+    padding: 10px 0;
+    max-width: 700px;
+  }
+
+  .custom-review-author {
+    font-weight: bold;
+    margin-top: 10px;
+    font-family: Assistant, sans-serif;
+  }
+
+  .custom-reviews-prev-btn,
+  .custom-reviews-next-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    border: none;
+    font-size: 28px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: 0.3s;
+    opacity: 1;
+  }
+
+  .custom-reviews-prev-btn:hover,
+  .custom-reviews-next-btn:hover {
+    background: black;
+    opacity: 1;
+  }
+
+  .custom-reviews-prev-btn {
+    left: -28px;
+  }
+
+  .custom-reviews-next-btn {
+    right: -28px;
+  }
+
+  .custom-review-title {
+    margin-top: 20px;
+  }
+
+  .custom-review-title-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 16px;
+    color: rgb(0, 0, 0);
+    font-family: Assistant, sans-serif;
+  }
+
+  @media (min-width: 1024px) {
+    .custom-review-title {
+      display: flex;
+      flex-direction: column;
+    }
+    .custom-review-time {
+      margin-left: 0px;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .custom-reviews-container {
+      --max-reviews-per-slide: {{ section.settings.max_reviews_per_slide_tablet }};
+    }
+  }
+
+  @media (max-width: 767px) {
+    .custom-reviews-header {
+      display: block;
+    }
+    .custom-review-time {
+      margin-left: 0px;
+    }
+    .custom-reviews-container {
+      --max-reviews-per-slide: {{ section.settings.max_reviews_per_slide_mobile }};
+      width: 100%;
+    }
+    .custom-review-card {
+      flex: 1 1 100%;
+      max-width: 100%;
+      margin: 0 0 20px 0;
+    }
+    .custom-reviews-prev-btn {
+      left: -8px;
+      z-index: 10;
+    }
+    .custom-reviews-next-btn {
+      right: -8px;
+      z-index: 10;
+    }
+  }
+</style>
+
+<script>
+(function() {
+  document.addEventListener("DOMContentLoaded", function () {
+    const container = document.querySelector(".custom-reviews-container");
+    if (!container) return; // Exit if the container is not found
+
+    const reviews = document.querySelectorAll(".custom-review-card");
+    const prevBtn = document.querySelector(".custom-reviews-prev-btn");
+    const nextBtn = document.querySelector(".custom-reviews-next-btn");
+
+    let currentIndex = 0;
+    let autoSlideEnabled = container.getAttribute("data-auto-slide") === "true";
+    let slideSpeed = parseInt(container.getAttribute("data-speed")) * 1000;
+
+    const clonedReviews = Array.from(reviews).map((review) => review.cloneNode(true));
+    clonedReviews.forEach((review) => container.appendChild(review));
+
+    const totalReviews = reviews.length + clonedReviews.length;
+
+    function getMaxReviewsPerSlide() {
+      if (window.innerWidth >= 1024) {
+        return {{ section.settings.max_reviews_per_slide }};
+      } else if (window.innerWidth >= 768) {
+        return {{ section.settings.max_reviews_per_slide_tablet }};
+      } else {
+        return {{ section.settings.max_reviews_per_slide_mobile }};
+      }
+    }
+
+    function getSlideWidth() {
+      const reviewCard = reviews[0];
+      const cardWidth = reviewCard.offsetWidth;
+      const gap = 15;
+      return cardWidth + gap;
+    }
+
+    function updateSlider() {
+      const slideWidth = getSlideWidth();
+      container.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+    }
+
+    function nextSlide() {
+      const maxReviewsPerSlide = getMaxReviewsPerSlide();
+      currentIndex++;
+
+      if (currentIndex >= Math.ceil(totalReviews / maxReviewsPerSlide)) {
+        currentIndex = 0;
+        container.style.transition = "none";
+        updateSlider();
+        setTimeout(() => {
+          container.style.transition = "transform 0.5s ease-in-out";
+        }, 0);
+      } else {
+        updateSlider();
+      }
+    }
+
+    function prevSlide() {
+      const maxReviewsPerSlide = getMaxReviewsPerSlide();
+      currentIndex--;
+
+      if (currentIndex < 0) {
+        currentIndex = Math.ceil(totalReviews / maxReviewsPerSlide) - 1;
+        container.style.transition = "none";
+        updateSlider();
+        setTimeout(() => {
+          container.style.transition = "transform 0.5s ease-in-out";
+        }, 0);
+      } else {
+        updateSlider();
+      }
+    }
+
+    let autoSlide = setInterval(() => {
+      if (autoSlideEnabled) {
+        nextSlide();
+      }
+    }, slideSpeed);
+
+    function resetAutoSlide() {
+      clearInterval(autoSlide);
+      autoSlide = setInterval(() => {
+        if (autoSlideEnabled) {
+          nextSlide();
+        }
+      }, slideSpeed);
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener("click", function () {
+        nextSlide();
+        resetAutoSlide();
+      });
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener("click", function () {
+        prevSlide();
+        resetAutoSlide();
+      });
+    }
+
+    if (container) {
+      container.addEventListener("mouseenter", () => clearInterval(autoSlide));
+      container.addEventListener("mouseleave", () => resetAutoSlide());
+    }
+
+    window.addEventListener("resize", () => {
+      updateSlider();
+    });
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    if (container) {
+      container.addEventListener("touchstart", (e) => {
+        touchStartX = e.touches[0].clientX;
+      });
+
+      container.addEventListener("touchend", (e) => {
+        touchEndX = e.changedTouches[0].clientX;
+        handleSwipe();
+      });
+    }
+
+    function handleSwipe() {
+      if (touchEndX < touchStartX) {
+        nextSlide();
+      } else if (touchEndX > touchStartX) {
+        prevSlide();
+      }
+    }
+  });
+})();
+</script>
